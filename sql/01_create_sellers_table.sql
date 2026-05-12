@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS stg_sellers
+DROP TABLE IF EXISTS stg_sellers;
 
 CREATE TABLE stg_sellers (
     seller_id TEXT,
