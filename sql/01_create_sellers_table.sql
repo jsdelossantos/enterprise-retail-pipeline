@@ -1,6 +1,7 @@
-CREATE TABLE sellers (
-    seller_id VARCHAR(32) PRIMARY KEY,
-    seller_zip_code_prefix VARCHAR(5),
-    seller_city VARCHAR(100),
-    seller_state VARCHAR(2)
+DROP TABLE IF EXISTS
+CREATE TABLE stg_sellers (
+    seller_id TEXT,
+    seller_zip_code_prefix TEXT,
+    seller_city TEXT,
+    seller_state TEXT
 );
