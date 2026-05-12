@@ -38,5 +38,27 @@ def test_connection():
             connection.close()
             print("Database connection successfully closed.")
 
+
+def get_db_connection():
+    load_dotenv()
+
+    # Initialize connection variable
+    connection = None
+
+    try:
+        connection = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASS")
+        )
+        return connection
+        
+
+    except Exception as error:
+        print(f"Failed to connect to the database. Error: {error}")
+
+
 if __name__ == "__main__":
     test_connection()
