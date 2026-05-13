@@ -3,12 +3,12 @@ from pathlib import Path
 from db_connect import get_db_connection
 import psycopg2.extras
 
-def extract_sellers_data():
+def extract_data(dataset_name):
     # getting the path of the data
     current_script_path = Path(__file__).resolve()
     project_root = current_script_path.parent.parent
 
-    csv_file = project_root / "data" / "olist_sellers_dataset.csv"
+    csv_file = project_root / "data" / dataset_name
 
     print(f"Attempting to read file from: {csv_file}")
     try:
@@ -88,4 +88,4 @@ def load_sellers_data_to_postgres():
 
 
 if __name__ == "__main__":
-    load_sellers_data_to_postgres()
+    extract_data('olist_products_dataset.csv')
