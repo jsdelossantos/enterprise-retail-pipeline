@@ -32,6 +32,38 @@ def extract_data(dataset_name):
     return sellers_df
 
 
+def execute_sql_file(conn, sql_file_path):
+    
+    # Connect to db first
+    if conn is None:
+        return
+    
+    try:
+        cursor = conn.cursor()
+        current_script_path = Path(__file__).resolve()
+        
+        # Get root of sql file for creation of table
+        project_root = current_script_path.parent.parent
+        sql_file = project_root / "sql" / sql_file_path
+
+        # Read content of SQL file to be put onto query variable then execute it
+        print(f"Reading SQL file from: {sql_file}")
+        with open(sql_file, "r") as file:
+            sql_query = file.read()
+        
+        cursor.execute(sql_query)
+        print("Table successfully created or verified in PostgreSQL!")
+        conn.commit()
+
+    except Exception as e:
+        print(f"Failed to create table. Error {e}")
+        conn.rollback()
+    
+    finally:
+        if conn is not None:
+            cursor.close()
+
+
 def load_sellers_data_to_postgres():
     
     # Connect to db first
@@ -57,7 +89,7 @@ def load_sellers_data_to_postgres():
         conn.commit()
 
         # Get the seller data set as df, then turn it into tuple for bulk insertion of data onto table
-        sellers_df = extract_sellers_data()
+        sellers_df = extract_data()
         sellers_data = list(sellers_df.itertuples(index=False, name=None))
 
         insert_query = """
@@ -88,4 +120,5 @@ def load_sellers_data_to_postgres():
 
 
 if __name__ == "__main__":
+    conn = get_db_connection()
     extract_data('olist_products_dataset.csv')
