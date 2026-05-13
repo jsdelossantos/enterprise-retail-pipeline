@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 from db_connect import get_db_connection
 import psycopg2.extras
+from psycopg2 import sql
 
 def extract_data(dataset_name):
     # getting the path of the data
@@ -75,10 +76,19 @@ def bulk_insert_dataframe(conn, df, table_name):
         # Convert df into tuple for bulk insertion of data onto table
         data = list(df.itertuples(index=False, name=None))
 
-        insert_query = f"""
-            INSERT INTO {table_name} (seller_id, seller_zip_code_prefix, seller_city, seller_state)
+        # gets the columns so the query wouldn't be static
+        columns_list = list(df.columns)
+        
+        # convert every string in the list into a safe identifier object
+        safe_columns = [sql.Identifier(col) for col in columns_list]
+
+        insert_query = sql.SQL("""
+            INSERT INTO {table} ({cols})
             VALUES %s;
-        """
+        """).format(
+            table=sql.Identifier(table_name),
+            cols=sql.SQL(", ").join(safe_columns)
+        )
 
         # psycopg2 takes the cursor, the query, and then the data to be inserted
         print("Pushing data to Postgresql")
