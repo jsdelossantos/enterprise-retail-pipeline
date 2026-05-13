@@ -13,7 +13,7 @@ def extract_data(dataset_name):
 
     print(f"Attempting to read file from: {csv_file}")
     try:
-        sellers_df = pd.read_csv(csv_file, encoding='utf-8')
+        df = pd.read_csv(csv_file, encoding='utf-8')
 
     except FileNotFoundError:
         print("Error: Could not find the csv file")
@@ -22,15 +22,15 @@ def extract_data(dataset_name):
     print("\n--- Data Extraction Successful ---")
 
     print("\nPreview of the data:")
-    print(sellers_df.head())
+    print(df.head())
 
     print("\nSchema Summary:")
-    print(sellers_df.info())
+    print(df.info())
 
     # Replaces all NaN values with Python's None
-    sellers_df = sellers_df.where(pd.notnull(sellers_df), None)
+    df = df.where(pd.notnull(df), None)
 
-    return sellers_df
+    return df
 
 
 def execute_sql_file(conn, sql_file_path):
