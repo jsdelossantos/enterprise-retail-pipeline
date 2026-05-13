@@ -59,66 +59,60 @@ def execute_sql_file(conn, sql_file_path):
         print(f"Failed to create table. Error {e}")
         conn.rollback()
     
+    # we do not close it inside the function because it would interfere with the other functions if it closed beforehand. connection should be closed outside.
     finally:
         if conn is not None:
             cursor.close()
 
 
-def load_sellers_data_to_postgres():
-    
-    # Connect to db first
-    conn = get_db_connection()
+def bulk_insert_dataframe(conn, df, table_name):
     if conn is None:
         return
     
     try:
         cursor = conn.cursor()
-        current_script_path = Path(__file__).resolve()
-        
-        # Get root of sql file for creation of table
-        project_root = current_script_path.parent.parent
-        sql_file = project_root / "sql" / "01_create_sellers_table.sql"
 
-        # Read content of SQL file to be put onto query variable then execute it
-        print(f"Reading SQL file from: {sql_file}")
-        with open(sql_file, "r") as file:
-            sql_query = file.read()
-        
-        cursor.execute(sql_query)
-        print("Table successfully created or verified in PostgreSQL!")
-        conn.commit()
+        # Convert df into tuple for bulk insertion of data onto table
+        data = list(df.itertuples(index=False, name=None))
 
-        # Get the seller data set as df, then turn it into tuple for bulk insertion of data onto table
-        sellers_df = extract_data()
-        sellers_data = list(sellers_df.itertuples(index=False, name=None))
-
-        insert_query = """
-            INSERT INTO stg_sellers (seller_id, seller_zip_code_prefix, seller_city, seller_state)
+        insert_query = f"""
+            INSERT INTO {table_name} (seller_id, seller_zip_code_prefix, seller_city, seller_state)
             VALUES %s;
         """
 
+        # psycopg2 takes the cursor, the query, and then the data to be inserted
         print("Pushing data to Postgresql")
         psycopg2.extras.execute_values(
             cursor,
             insert_query,
-            sellers_data
+            data
         )
 
         conn.commit()
-        print(f"Success! {len(sellers_data)} rows loaded into the sellers table.")
+        print(f"Success! {len(data)} rows loaded into the sellers table.")
 
 
     except Exception as e:
         print(f"Failed to load data. Error {e}")
         conn.rollback()
     
+    # we do not close it inside the function because it would interfere with the other functions if it closed beforehand. connection should be closed outside.
     finally:
         if conn is not None:
             cursor.close()
-            conn.close()
 
 
 
 if __name__ == "__main__":
     conn = get_db_connection()
-    extract_data('olist_products_dataset.csv')
+    
+    # 1. Extract
+    df = extract_data("olist_sellers_dataset.csv")
+    
+    # 2. Create Table (Staging)
+    execute_sql_file(conn, "01_create_sellers_table.sql")
+    
+    # 3. Load Data
+    bulk_insert_dataframe(conn, df, "stg_sellers")
+
+    conn.close()
