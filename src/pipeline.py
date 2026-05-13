@@ -117,12 +117,12 @@ if __name__ == "__main__":
     conn = get_db_connection()
     
     # 1. Extract
-    df = extract_data("olist_sellers_dataset.csv")
+    df = extract_data("olist_orders_dataset.csv")
     
     # 2. Create Table (Staging)
-    execute_sql_file(conn, "01_create_sellers_table.sql")
+    execute_sql_file(conn, "02_create_orders_table.sql")
     
     # 3. Load Data
-    bulk_insert_dataframe(conn, df, "stg_sellers")
+    bulk_insert_dataframe(conn, df, "stg_orders")
 
     conn.close()
