@@ -99,7 +99,7 @@ def bulk_insert_dataframe(conn, df, table_name):
         )
 
         conn.commit()
-        print(f"Success! {len(data)} rows loaded into the sellers table.")
+        print(f"Success! {len(data)} rows loaded into the {table_name} table.")
 
 
     except Exception as e:
