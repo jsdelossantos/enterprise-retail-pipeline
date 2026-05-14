@@ -3,6 +3,8 @@ from pathlib import Path
 from db_connect import get_db_connection
 import psycopg2.extras
 from psycopg2 import sql
+import logging
+import json
 
 def extract_data(dataset_name):
     # getting the path of the data
@@ -157,19 +159,45 @@ PIPELINE_CONFIG = [
         "csv_file": "product_category_name_translation.csv",
         "sql_file": "09_create_category_name_translation_table.sql",
         "table_name": "stg_category_name_translation"
-    },
+    }
 ]
 
 if __name__ == "__main__":
-    conn = get_db_connection()
-    
-    # 1. Extract
-    df = extract_data("olist_orders_dataset.csv")
-    
-    # 2. Create Table (Staging)
-    execute_sql_file(conn, "02_create_orders_table.sql")
-    
-    # 3. Load Data
-    bulk_insert_dataframe(conn, df, "stg_orders")
+    # 1. Configure the logger
+    logger = logging.getLogger("pipeline_logger")
+    logger.setLevel(logging.DEBUG)  # Capture everything from DEBUG up to CRITICAL
 
+    # 2. Create a FileHandler to write errors to a specific file
+    file_handler = logging.FileHandler("pipeline_errors.log", mode="a")
+    file_handler.setLevel(logging.ERROR)  # ONLY log ERROR or CRITICAL messages to this file
+
+    # 3. Create a Formatter to structure the log entries
+    formatter = logging.Formatter(
+        fmt="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    file_handler.setFormatter(formatter)
+
+    # 4. Add the handler to the logger
+    logger.addHandler(file_handler)
+
+    conn = get_db_connection()
+    for config in PIPELINE_CONFIG:
+        try:
+                # 1. Extract
+            df = extract_data(config["csv_file"])
+
+            # 2. Create Table (Staging)
+            execute_sql_file(conn, config["sql_file"])
+
+            # 3. Load Data
+            bulk_insert_dataframe(conn, df, config["table_name"])
+        except Exception as e:
+            # exc_info=True automatically captures and appends the full stack trace
+            logger.error(
+                f"Failed execution for config: {config["csv_file"]}.", 
+                exc_info=True
+            )
+            continue
+    
     conn.close()
