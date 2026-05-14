@@ -112,6 +112,53 @@ def bulk_insert_dataframe(conn, df, table_name):
             cursor.close()
 
 
+PIPELINE_CONFIG = [
+    {
+        "csv_file": "olist_sellers_dataset.csv",
+        "sql_file": "01_create_sellers_table.sql",
+        "table_name": "stg_sellers"
+    },
+    {
+        "csv_file": "olist_orders_dataset.csv",
+        "sql_file": "02_create_orders_table.sql",
+        "table_name": "stg_orders"
+    },
+    {
+        "csv_file": "olist_customers_dataset.csv",
+        "sql_file": "03_create_customers_table.sql",
+        "table_name": "stg_customers"
+    },
+    {
+        "csv_file": "olist_order_items_dataset.csv",
+        "sql_file": "04_create_order_items_table.sql",
+        "table_name": "stg_order_items"
+    },
+    {
+        "csv_file": "olist_order_payments_dataset.csv",
+        "sql_file": "05_create_order_payments_table.sql",
+        "table_name": "stg_order_payments"
+    },
+    {
+        "csv_file": "olist_order_reviews_dataset.csv",
+        "sql_file": "06_create_order_reviews_table.sql",
+        "table_name": "stg_order_reviews"
+    },
+    {
+        "csv_file": "olist_products_dataset.csv",
+        "sql_file": "07_create_products_table.sql",
+        "table_name": "stg_products"
+    },
+    {
+        "csv_file": "olist_geolocation_dataset.csv",
+        "sql_file": "08_create_geolocation_table.sql",
+        "table_name": "stg_geolocation"
+    },
+    {
+        "csv_file": "product_category_name_translation.csv",
+        "sql_file": "09_create_category_name_translation_table.sql",
+        "table_name": "stg_category_name_translation"
+    },
+]
 
 if __name__ == "__main__":
     conn = get_db_connection()
