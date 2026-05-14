@@ -114,6 +114,27 @@ def bulk_insert_dataframe(conn, df, table_name):
             cursor.close()
 
 
+def create_logger():
+    # 1. Configure the logger
+    logger = logging.getLogger("pipeline_logger")
+    logger.setLevel(logging.DEBUG)  # Capture everything from DEBUG up to CRITICAL
+
+    # 2. Create a FileHandler to write errors to a specific file
+    file_handler = logging.FileHandler("pipeline_errors.log", mode="a")
+    file_handler.setLevel(logging.ERROR)  # ONLY log ERROR or CRITICAL messages to this file
+
+    # 3. Create a Formatter to structure the log entries
+    formatter = logging.Formatter(
+        fmt="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    file_handler.setFormatter(formatter)
+
+    # 4. Add the handler to the logger
+    logger.addHandler(file_handler)
+    
+    return logger
+
 PIPELINE_CONFIG = [
     {
         "csv_file": "olist_sellers_dataset.csv",
@@ -163,24 +184,7 @@ PIPELINE_CONFIG = [
 ]
 
 if __name__ == "__main__":
-    # 1. Configure the logger
-    logger = logging.getLogger("pipeline_logger")
-    logger.setLevel(logging.DEBUG)  # Capture everything from DEBUG up to CRITICAL
-
-    # 2. Create a FileHandler to write errors to a specific file
-    file_handler = logging.FileHandler("pipeline_errors.log", mode="a")
-    file_handler.setLevel(logging.ERROR)  # ONLY log ERROR or CRITICAL messages to this file
-
-    # 3. Create a Formatter to structure the log entries
-    formatter = logging.Formatter(
-        fmt="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
-    file_handler.setFormatter(formatter)
-
-    # 4. Add the handler to the logger
-    logger.addHandler(file_handler)
-
+    logger = create_logger()
     conn = get_db_connection()
     for config in PIPELINE_CONFIG:
         try:
