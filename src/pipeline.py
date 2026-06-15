@@ -188,7 +188,7 @@ if __name__ == "__main__":
     conn = get_db_connection()
     for config in PIPELINE_CONFIG:
         try:
-                # 1. Extract
+            # 1. Extract
             df = extract_data(config["csv_file"])
 
             # 2. Create Table (Staging)

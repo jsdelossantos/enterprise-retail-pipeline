@@ -21,8 +21,7 @@ ranked_seller_performance AS (
 		monthly_revenue,
 		DENSE_RANK() OVER (
 			PARTITION BY sales_month
-			ORDER BY monthly_revenue DESC
-		) AS seller_rank,
+			ORDER BY monthly_revenue DESC) AS seller_rank,
 		LAG(monthly_revenue, 1, 0) OVER (
 			PARTITION BY seller_id
 			ORDER BY sales_month ASC
