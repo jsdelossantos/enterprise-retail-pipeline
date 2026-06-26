@@ -183,6 +183,13 @@ PIPELINE_CONFIG = [
     }
 ]
 
+TRANSFORM_CONFIG = [
+    "10_create_dim_products.sql",
+    "11_create_dim_customers.sql",
+    "12_create_dim_sellers.sql",
+    "13_create_fact_sales.sql"
+]
+
 if __name__ == "__main__":
     logger = create_logger()
     conn = get_db_connection()
@@ -204,4 +211,14 @@ if __name__ == "__main__":
             )
             continue
     
+    for config in TRANSFORM_CONFIG:
+        try:
+            execute_sql_file(conn, config)
+        except Exception as e:
+            logger.error(
+                f"Failed execution for config: {config}.",
+                exc_info=True
+            )
+            continue
+
     conn.close()
