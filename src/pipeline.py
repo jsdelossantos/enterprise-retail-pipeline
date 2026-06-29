@@ -206,7 +206,7 @@ if __name__ == "__main__":
         except Exception as e:
             # exc_info=True automatically captures and appends the full stack trace
             logger.error(
-                f"Failed execution for config: {config["csv_file"]}.", 
+                f"Failed execution for config: {config['csv_file']}.", 
                 exc_info=True
             )
             continue
