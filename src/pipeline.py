@@ -211,6 +211,8 @@ if __name__ == "__main__":
             )
             continue
     
+    execute_sql_file(conn, "09b_create_staging_indexes.sql")
+    
     for config in TRANSFORM_CONFIG:
         try:
             execute_sql_file(conn, config)
