@@ -1,0 +1,4 @@
+.env
+__pycache__/
+pipeline_errors.log
+.gitignore
