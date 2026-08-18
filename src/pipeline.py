@@ -81,9 +81,17 @@ def bulk_insert_dataframe(conn, df, table_name, primary_key):
         # gets the columns so the query wouldn't be static
         columns_list = list(df.columns)
 
+        # need to add a pk_logic to determine if need to use a composite key or a primary key
+        if isinstance(primary_key, list):
+            pk_logic = sql.SQL(", ").join([sql.Identifier(col) for col in primary_key])
+        else:
+            pk_logic = sql.Identifier(primary_key)
+
+            # converting string to list for getting update_columns
+            primary_key = [primary_key]
+
         # create a update_column for upserting data
-        update_columns = columns_list.copy()
-        update_columns.remove(primary_key)
+        update_columns = [col for col in columns_list if col not in primary_key]
 
         # create an empty list to hold our "safe" psycopg2 objects
         set_fragments = []
@@ -121,7 +129,7 @@ def bulk_insert_dataframe(conn, df, table_name, primary_key):
                 """).format(
                     table=sql.Identifier(table_name),
                     cols=sql.SQL(", ").join(safe_columns),
-                    pk=sql.Identifier(primary_key),
+                    pk=pk_logic,
                     set_logic=final_set_logic
                 )
 
@@ -214,8 +222,7 @@ PIPELINE_CONFIG = [
     {
         "csv_file": "olist_geolocation_dataset.csv",
         "sql_file": "08_create_geolocation_table.sql",
-        "table_name": "stg_geolocation",
-        "primary_key": ["geolocation_lat", "geolocation_lng"]
+        "table_name": "stg_geolocation"
     },
     {
         "csv_file": "product_category_name_translation.csv",
@@ -244,7 +251,7 @@ if __name__ == "__main__":
             execute_sql_file(conn, config["sql_file"])
 
             # 3. Load Data
-            bulk_insert_dataframe(conn, df, config["table_name"])
+            bulk_insert_dataframe(conn, df, config["table_name"], config["primary_key"])
         except Exception as e:
             # exc_info=True automatically captures and appends the full stack trace
             logger.error(
