@@ -139,37 +139,44 @@ PIPELINE_CONFIG = [
     {
         "csv_file": "olist_sellers_dataset.csv",
         "sql_file": "01_create_sellers_table.sql",
-        "table_name": "stg_sellers"
+        "table_name": "stg_sellers",
+        "primary_key": "seller_id"
     },
     {
         "csv_file": "olist_orders_dataset.csv",
         "sql_file": "02_create_orders_table.sql",
-        "table_name": "stg_orders"
+        "table_name": "stg_orders",
+        "primary_key": "order_id"
     },
     {
         "csv_file": "olist_customers_dataset.csv",
         "sql_file": "03_create_customers_table.sql",
-        "table_name": "stg_customers"
+        "table_name": "stg_customers",
+        "primary_key": "customer_id"
     },
     {
         "csv_file": "olist_order_items_dataset.csv",
         "sql_file": "04_create_order_items_table.sql",
-        "table_name": "stg_order_items"
+        "table_name": "stg_order_items",
+        "primary_key": "order_id" #WRONG
     },
     {
         "csv_file": "olist_order_payments_dataset.csv",
         "sql_file": "05_create_order_payments_table.sql",
-        "table_name": "stg_order_payments"
+        "table_name": "stg_order_payments",
+        "primary_key": "order_id" #WRONG
     },
     {
         "csv_file": "olist_order_reviews_dataset.csv",
         "sql_file": "06_create_order_reviews_table.sql",
-        "table_name": "stg_order_reviews"
+        "table_name": "stg_order_reviews",
+        "primary_key": "review_id"
     },
     {
         "csv_file": "olist_products_dataset.csv",
         "sql_file": "07_create_products_table.sql",
-        "table_name": "stg_products"
+        "table_name": "stg_products",
+        "primary_key": "product_id"
     },
     {
         "csv_file": "olist_geolocation_dataset.csv",
@@ -179,7 +186,8 @@ PIPELINE_CONFIG = [
     {
         "csv_file": "product_category_name_translation.csv",
         "sql_file": "09_create_category_name_translation_table.sql",
-        "table_name": "stg_category_name_translation"
+        "table_name": "stg_category_name_translation",
+        "primary_key": "product_category_name"
     }
 ]
 
