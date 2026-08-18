@@ -68,7 +68,7 @@ def execute_sql_file(conn, sql_file_path):
             cursor.close()
 
 
-def bulk_insert_dataframe(conn, df, table_name):
+def bulk_insert_dataframe(conn, df, table_name, primary_key):
     if conn is None:
         return
     
@@ -80,17 +80,50 @@ def bulk_insert_dataframe(conn, df, table_name):
 
         # gets the columns so the query wouldn't be static
         columns_list = list(df.columns)
-        
+
+        # create a update_column for upserting data
+        update_columns = columns_list.copy()
+        update_columns.remove(primary_key)
+
+        # create an empty list to hold our "safe" psycopg2 objects
+        set_fragments = []
+
+        # We loop through the columns one by one
+        for col in update_columns:
+            
+            # Put the column name into an "Identifier" box so it is safe
+            safe_col = sql.Identifier(col)
+            
+            # Create the command blueprint: {col} = EXCLUDED.{col}
+            # Then use .format() to plug our safe_col into the {col} slots
+            # this fragment query would dynamically generate this example: "order_status" = EXCLUDED."order_status"
+            # and it would do it per column fro the loop
+            fragment = sql.SQL("{col} = EXCLUDED.{col}").format(col=safe_col)
+            
+            # Add this finished fragment to our list
+            set_fragments.append(fragment)
+
+        # Finally, we take our list of fragments and glue them together with commas.
+        # sql.SQL(", ") is the glue. .join() snaps them all together.
+        final_set_logic = sql.SQL(", ").join(set_fragments)
+
+        # a list comprehension, basically does the same thing in the loop above
         # convert every string in the list into a safe identifier object
         safe_columns = [sql.Identifier(col) for col in columns_list]
 
+        # so in the insert query, in using psycopg2, we pretty much need to 'contain' the code in their corresponding 'types', at least that's how i understand it
+        # for sql queries, we use sql.SQL and inside it the query itself, the variables inside {} 
         insert_query = sql.SQL("""
-            INSERT INTO {table} ({cols})
-            VALUES %s;
-        """).format(
-            table=sql.Identifier(table_name),
-            cols=sql.SQL(", ").join(safe_columns)
-        )
+                    INSERT INTO {table} ({cols})
+                    VALUES %s
+                    ON CONFLICT ({pk}) 
+                    DO UPDATE SET {set_logic};
+                """).format(
+                    table=sql.Identifier(table_name),
+                    cols=sql.SQL(", ").join(safe_columns),
+                    pk=sql.Identifier(primary_key),
+                    set_logic=final_set_logic
+                )
 
         # psycopg2 takes the cursor, the query, and then the data to be inserted
         print("Pushing data to Postgresql")
