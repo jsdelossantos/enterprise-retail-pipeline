@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS stg_orders;
 
 CREATE TABLE stg_orders (
-    order_id TEXT,
+    order_id TEXT PRIMARY KEY,
     customer_id TEXT,
     order_status TEXT,
     order_purchase_timestamp TEXT,

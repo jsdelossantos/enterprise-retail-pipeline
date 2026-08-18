@@ -7,5 +7,6 @@ CREATE TABLE stg_order_items (
     seller_id TEXT,
     shipping_limit_date TEXT,
     price TEXT,
-    freight_value TEXT
+    freight_value TEXT,
+    PRIMARY KEY (order_id, order_item_id)
 );

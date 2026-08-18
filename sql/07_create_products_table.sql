@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS stg_products;
 
 CREATE TABLE stg_products (
-    product_id TEXT,
+    product_id TEXT PRIMARY KEY,
     product_category_name TEXT,
     product_name_lenght TEXT,
     product_description_lenght TEXT,

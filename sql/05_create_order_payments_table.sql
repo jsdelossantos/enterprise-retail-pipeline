@@ -5,5 +5,6 @@ CREATE TABLE stg_order_payments (
     payment_sequential TEXT,
     payment_type TEXT,
     payment_installments TEXT,
-    payment_value TEXT
+    payment_value TEXT,
+    PRIMARY KEY (order_id, payment_sequential)
 );
