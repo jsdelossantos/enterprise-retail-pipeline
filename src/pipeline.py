@@ -112,7 +112,7 @@ def bulk_insert_dataframe(conn, df, table_name, primary_key):
         safe_columns = [sql.Identifier(col) for col in columns_list]
 
         # so in the insert query, in using psycopg2, we pretty much need to 'contain' the code in their corresponding 'types', at least that's how i understand it
-        # for sql queries, we use sql.SQL and inside it the query itself, the variables inside {} 
+        # for sql queries, we use sql.SQL and inside it the query itself, the variables inside {} are dynamic, and we use format to 'identify' what they are
         insert_query = sql.SQL("""
                     INSERT INTO {table} ({cols})
                     VALUES %s
@@ -191,13 +191,13 @@ PIPELINE_CONFIG = [
         "csv_file": "olist_order_items_dataset.csv",
         "sql_file": "04_create_order_items_table.sql",
         "table_name": "stg_order_items",
-        "primary_key": "order_id" #WRONG
+        "primary_key": ["order_id", "order_item_id"]
     },
     {
         "csv_file": "olist_order_payments_dataset.csv",
         "sql_file": "05_create_order_payments_table.sql",
         "table_name": "stg_order_payments",
-        "primary_key": "order_id" #WRONG
+        "primary_key": ["order_id", "payment_sequential"]
     },
     {
         "csv_file": "olist_order_reviews_dataset.csv",
@@ -214,7 +214,8 @@ PIPELINE_CONFIG = [
     {
         "csv_file": "olist_geolocation_dataset.csv",
         "sql_file": "08_create_geolocation_table.sql",
-        "table_name": "stg_geolocation"
+        "table_name": "stg_geolocation",
+        "primary_key": ["geolocation_lat", "geolocation_lng"]
     },
     {
         "csv_file": "product_category_name_translation.csv",
