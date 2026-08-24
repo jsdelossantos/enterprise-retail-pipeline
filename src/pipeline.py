@@ -81,6 +81,10 @@ def bulk_insert_dataframe(conn, df, table_name, primary_key=None):
         # gets the columns so the query wouldn't be static
         columns_list = list(df.columns)
 
+        # a list comprehension, basically does the same thing in the loop above
+        # convert every string in the list into a safe identifier object
+        safe_columns = [sql.Identifier(col) for col in columns_list]
+        
         # if the table has a primary key, upsert
         if primary_key:
             # need to add a pk_logic to determine if need to use a composite key or a primary key
@@ -116,10 +120,6 @@ def bulk_insert_dataframe(conn, df, table_name, primary_key=None):
             # Finally, we take our list of fragments and glue them together with commas.
             # sql.SQL(", ") is the glue. .join() snaps them all together.
             final_set_logic = sql.SQL(", ").join(set_fragments)
-
-            # a list comprehension, basically does the same thing in the loop above
-            # convert every string in the list into a safe identifier object
-            safe_columns = [sql.Identifier(col) for col in columns_list]
 
             # so in the insert query, in using psycopg2, we pretty much need to 'contain' the code in their corresponding 'types', at least that's how i understand it
             # for sql queries, we use sql.SQL and inside it the query itself, the variables inside {} are dynamic, and we use format to 'identify' what they are
