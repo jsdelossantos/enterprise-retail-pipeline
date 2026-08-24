@@ -1,4 +1,4 @@
-CREATE TABLE stg_sellers (
+CREATE TABLE IF NOT EXISTS stg_sellers (
     seller_id TEXT PRIMARY KEY,
     seller_zip_code_prefix TEXT,
     seller_city TEXT,

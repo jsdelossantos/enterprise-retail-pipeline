@@ -1,4 +1,4 @@
-CREATE TABLE stg_orders (
+CREATE TABLE IF NOT EXISTS stg_orders (
     order_id TEXT PRIMARY KEY,
     customer_id TEXT,
     order_status TEXT,

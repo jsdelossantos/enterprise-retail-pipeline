@@ -1,4 +1,4 @@
-CREATE TABLE stg_order_items (
+CREATE TABLE IF NOT EXISTS stg_order_items (
     order_id TEXT,
     order_item_id TEXT,
     product_id TEXT,
