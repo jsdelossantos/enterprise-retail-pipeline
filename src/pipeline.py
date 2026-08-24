@@ -228,12 +228,13 @@ PIPELINE_CONFIG = [
         "csv_file": "olist_products_dataset.csv",
         "sql_file": "07_create_products_table.sql",
         "table_name": "stg_products",
-        "primary_key": "product_id"
+        "primary_key": "product_id",
     },
     {
         "csv_file": "olist_geolocation_dataset.csv",
         "sql_file": "08_create_geolocation_table.sql",
-        "table_name": "stg_geolocation"
+        "table_name": "stg_geolocation",
+        "primary_key": None
     },
     {
         "csv_file": "product_category_name_translation.csv",
