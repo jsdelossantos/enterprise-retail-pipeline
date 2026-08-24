@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS stg_customers;
-
 CREATE TABLE stg_customers (
     customer_id TEXT PRIMARY KEY,
     customer_unique_id TEXT,

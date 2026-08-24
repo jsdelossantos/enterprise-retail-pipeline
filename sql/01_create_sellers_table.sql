@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS stg_sellers;
-
 CREATE TABLE stg_sellers (
     seller_id TEXT PRIMARY KEY,
     seller_zip_code_prefix TEXT,
