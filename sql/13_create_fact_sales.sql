@@ -10,7 +10,8 @@ CREATE TABLE fact_sales (
     freight_value NUMERIC,
     total_payment_value NUMERIC,
     order_status TEXT,
-    order_purchase_timestamp TIMESTAMP
+    order_purchase_timestamp TIMESTAMP,
+    PRIMARY KEY (order_id, order_item_id)
 );
 
 INSERT INTO fact_sales (
